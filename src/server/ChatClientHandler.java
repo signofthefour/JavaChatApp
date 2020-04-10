@@ -9,6 +9,7 @@ import java.net.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import protocol.Message;
 
 import server.ChatServer;
 
@@ -39,30 +40,36 @@ public class ChatClientHandler extends Thread{
 		}
 	}
 	
+
+	
 	public void handleSocket() throws IOException {
-		System.out.println("Connected with: " + clientSocket);
 		outputStream = clientSocket.getOutputStream();
 		inputStream = clientSocket.getInputStream();
 
 		reader = new BufferedReader(new InputStreamReader(inputStream));
 		String line;
+		String msg = "";
 		
 		while ( (line = reader.readLine()) != null) {
-			handleAction(line);
-			if (!isLogin()) {
-				outputStream.write("You have to login before chat anything\n".getBytes());
-				continue;
-			}
+			while (line != "<msgend>") msg += line + "\n";
+			Message message  = new Message(msg);
+			handleLogin(message.getBody(), "");
 		}
 	}
 	
-	public void handleAction(String line) {
-		String[] token = line.split(" ");
-		if (token.length == 3 && token[0].equals("login")) {
-			handleLogin(token[1], token[2]);
+	public void handleMessage(Message msg) {
+		if (msg.getMethod().equals("REQUEST")) {
+			if (msg.getCommand().equals("LOGIN")) {
+				handleLogin(msg.getBody(), "123");
+				this.loginStatus = true;
+			}
 		}
-		if (token.length == 1 && token[0].equals("quit")) {
-			handleLogOut();
+		if (!isLogin()) {
+			try {
+				outputStream.write("You have to login first.".getBytes());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -105,6 +112,7 @@ public class ChatClientHandler extends Thread{
 			inputStream.close();
 			reader.close();
 			clientSocket.close();
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -125,7 +133,8 @@ public class ChatClientHandler extends Thread{
 	}
 	
 	public void offlineNotify(String logoutMsg) {
-		try {
+		try 
+		{
 			if (this.chatServer.getClientList().size() == 0) {
 				return;
 			} else {
