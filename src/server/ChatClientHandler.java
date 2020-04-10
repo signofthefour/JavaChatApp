@@ -6,10 +6,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.*;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
+import server.ChatServer;
 
 public class ChatClientHandler extends Thread{
-	private ChatServer server;
+	private ChatServer chatServer;
 	private Socket clientSocket;
 	private String clientName;
 	private String clientPassword;
@@ -23,7 +27,7 @@ public class ChatClientHandler extends Thread{
 	
 	public ChatClientHandler(Socket clientSocket, ChatServer server) {
 		this.clientSocket = clientSocket;
-		this.server = server;
+		this.chatServer = server;
 	}
 	
 	@Override
@@ -66,31 +70,33 @@ public class ChatClientHandler extends Thread{
 		this.clientName = name;
 		this.clientPassword = password;
 		
+		String onlineClients;
+		
 		try {
-			outputStream.write((name + " login successfully at" + new Date() + "\n").getBytes());
-			this.server.getClientList().add(this);
-			System.out.println("Alo");
-			String onlineClients = "";
-			if (this.server.getClientList().size() != 0) {
-				for (ChatClientHandler chatClient : this.server.getClientList()) {
+			System.out.println(name + " login successfully at" + new Date() + "\n");
+			ArrayList<ChatClientHandler> onlineList  = this.chatServer.getClientList();
+			if (onlineList.size() == 0) {
+				outputStream.write("Noone online\n".getBytes());
+			}
+			else {
+				onlineClients = "";
+				for (ChatClientHandler chatClient : onlineList) {
 					onlineClients += chatClient.getClientName() + '\n';
 				}
-				System.out.println(onlineClients);
-				outputStream.write(("Online: " + onlineClients).getBytes());
+				outputStream.write(("Online: \n" + onlineClients).getBytes());
 			}
+			this.chatServer.addClient(this);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		System.out.println(name + "Login successfully at" + new Date() + "\n");
 		this.loginStatus = true;
-		// TODO: Send all login client to the new and the new to all client
-	}
+}
 	
 	public void handleLogOut() {
 		try {
 			outputStream.write("Log out successfully.\n".getBytes());
 			System.out.println("Disconnect with" + clientSocket+ "\n");
-			this.server.getClientList().remove(this);
+//			this.chatServer.getClientList().remove(this);
 			outputStream.close();
 			inputStream.close();
 			reader.close();

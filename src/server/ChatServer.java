@@ -2,12 +2,12 @@ package server;
 
 import java.io.*;
 import java.net.*;
-import java.util.List;
+import java.util.ArrayList;
 
 
 public class ChatServer {
 	private ServerSocket serverSocket;
-	private List<ChatClientHandler> clientList;
+	private ArrayList<ChatClientHandler> clientList = new ArrayList<ChatClientHandler>(0);
 	
 	public ChatServer(ServerSocket serverSocket) {
 		this.serverSocket = serverSocket;
@@ -22,7 +22,11 @@ public class ChatServer {
 		}
 	}
 	
-	public List<ChatClientHandler> getClientList() {
+	public ArrayList<ChatClientHandler> getClientList() {
 		return clientList;
+	}
+	
+	public void addClient(ChatClientHandler newClient) {
+		this.clientList.add(newClient);
 	}
 }
