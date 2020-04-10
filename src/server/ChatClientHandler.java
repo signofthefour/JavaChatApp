@@ -67,14 +67,16 @@ public class ChatClientHandler extends Thread{
 		this.clientPassword = password;
 		
 		try {
-			outputStream.write((name + "Login successfully at" + new Date() + "\n").getBytes());
+			outputStream.write((name + " login successfully at" + new Date() + "\n").getBytes());
 			this.server.getClientList().add(this);
-			String online = "";
+			System.out.println("Alo");
+			String onlineClients = "";
 			if (this.server.getClientList().size() != 0) {
 				for (ChatClientHandler chatClient : this.server.getClientList()) {
-					online += chatClient.getClientName() + '\n';
+					onlineClients += chatClient.getClientName() + '\n';
 				}
-				outputStream.write(("Online: " + online).getBytes());
+				System.out.println(onlineClients);
+				outputStream.write(("Online: " + onlineClients).getBytes());
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -94,7 +96,6 @@ public class ChatClientHandler extends Thread{
 			reader.close();
 			clientSocket.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
