@@ -85,18 +85,22 @@ public class ChatClientHandler extends Thread{
 				}
 				outputStream.write(("Online: \n" + onlineClients).getBytes());
 			}
-			this.chatServer.addClient(this);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		this.onlineNotify(this.clientName + " is online.\n");
+		this.chatServer.addClient(this);
 		this.loginStatus = true;
-}
+	}
 	
 	public void handleLogOut() {
 		try {
 			outputStream.write("Log out successfully.\n".getBytes());
-			System.out.println("Disconnect with" + clientSocket+ "\n");
-//			this.chatServer.getClientList().remove(this);
+			System.out.println("Disconnect with" + clientSocket + "\n");
+			
+			this.offlineNotify(this.clientName + " is offline.\n");
+			this.chatServer.getClientList().remove(this);
+			
 			outputStream.close();
 			inputStream.close();
 			reader.close();
@@ -104,6 +108,33 @@ public class ChatClientHandler extends Thread{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+	}
+	
+	public void onlineNotify(String loginMsg) {
+		try {
+			if (this.chatServer.getClientList().size() == 0) {
+				return;
+			} else {
+				for (ChatClientHandler client : this.chatServer.getClientList()) {
+					client.outputStream.write(loginMsg.getBytes());
+				}
+			} 
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void offlineNotify(String logoutMsg) {
+		try {
+			if (this.chatServer.getClientList().size() == 0) {
+				return;
+			} else {
+				for (ChatClientHandler client : this.chatServer.getClientList()) {
+					client.outputStream.write(logoutMsg.getBytes());
+				}
+			} 
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
