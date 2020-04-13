@@ -17,6 +17,7 @@ public class ChatServer {
 	public void start() throws IOException {
 		while (true) {
 			Socket clientSocket = this.serverSocket.accept();
+			System.out.println("New request...");
 			ChatClientHandler chatClientHandler = new ChatClientHandler(clientSocket, this);
 			chatClientHandler.start();
 		}

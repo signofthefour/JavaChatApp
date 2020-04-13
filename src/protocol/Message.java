@@ -34,7 +34,7 @@ public class Message {
 		this.sender = lines[1].split(" ")[0];
 		this.receiver=lines[1].split(" ")[1];
 		for (int i = 3; i < lines.length; i++) {
-			body += lines[1];
+			body += lines[1] + '\n';
 		}
 	}
 	

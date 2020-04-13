@@ -49,19 +49,24 @@ public class ChatClientHandler extends Thread{
 		reader = new BufferedReader(new InputStreamReader(inputStream));
 		String line;
 		String msg = "";
-		
-		while ( (line = reader.readLine()) != null) {
-			while (line != "<msgend>") msg += line + "\n";
-			Message message  = new Message(msg);
-			handleLogin(message.getBody(), "");
+		Message message;
+		while ((line = reader.readLine()) != null) {
+			
+			if (line.equals("<start>")) {
+				while (!(line = reader.readLine()).equals("<end>")) {
+					msg += line + "\n";	
+				}
+				message  = new Message(msg);
+				handleMessage(message);
+			}
 		}
 	}
+	
 	
 	public void handleMessage(Message msg) {
 		if (msg.getMethod().equals("REQUEST")) {
 			if (msg.getCommand().equals("LOGIN")) {
 				handleLogin(msg.getBody(), "123");
-				this.loginStatus = true;
 			}
 		}
 		if (!isLogin()) {
@@ -80,7 +85,7 @@ public class ChatClientHandler extends Thread{
 		String onlineClients;
 		
 		try {
-			System.out.println(name + " login successfully at" + new Date() + "\n");
+			System.out.println(name + " login successfully at " + new Date() + "\n");
 			ArrayList<ChatClientHandler> onlineList  = this.chatServer.getClientList();
 			if (onlineList.size() == 0) {
 				outputStream.write("Noone online\n".getBytes());
