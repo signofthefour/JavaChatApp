@@ -51,7 +51,7 @@ public class ChatClientHandler extends Thread{
 		String msg = "";
 		Message message;
 		while ((line = reader.readLine()) != null) {
-			
+			System.out.println("Have msg...");
 			if (line.equals("<start>")) {
 				while (!(line = reader.readLine()).equals("<end>")) {
 					msg += line + "\n";	
@@ -67,6 +67,7 @@ public class ChatClientHandler extends Thread{
 		if (msg.getMethod().equals("REQUEST")) {
 			if (msg.getCommand().equals("LOGIN")) {
 				handleLogin(msg.getBody(), "123");
+				System.out.println("Login: " + msg.getBody());
 			}
 		}
 		if (!isLogin()) {

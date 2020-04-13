@@ -2,32 +2,40 @@ package client;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Scanner;
 
-public class SendThread extends Thread {
+
+public class SendThread implements Runnable {
 	private OutputStream outputStream;
-	private Client client;
+	private ChatClient client;
 	private String msg;
+	private Scanner scn = new Scanner (System.in);
 	
-	public SendThread(OutputStream out,Client client) {
+	public SendThread(OutputStream out, ChatClient client) {
 		this.outputStream = out;
 		this.client = client;
 	}
 	
-	public void work() {
-		if (!this.client.isLogin()) {
-			msg += "<start>\n";
-			msg += "REQUEST LOGIN\n";
-			msg += "client server\n";
-			msg += "\n";
-			msg += "tandat\n";
-			msg += "<end>\n";
-		}
-		
-		try {
-			outputStream.write(msg.getBytes());
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+	public void run() {
+		while (!client.getSocket().isClosed()) {
+			if (!this.client.isLogin()) {
+				this.client.login();
+				msg += "REQUEST LOGIN\n";
+				msg += this.client.getName() + " server\n";
+				msg += "\n";
+				msg += this.client.getName() + "\n";
+			}
+			else {
+				msg += "SEND MSG\n";
+				msg += "tandat mylove\n";
+				System.out.println("[tandat]: " + (msg = scn.nextLine()));
+			}
+			try {
+				send(msg);
+				msg = "";
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
