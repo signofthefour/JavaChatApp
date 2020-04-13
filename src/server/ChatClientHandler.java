@@ -1,5 +1,5 @@
 package server;
-
+//TODO: Split into two thread to handle in and out simutainously
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -55,8 +55,7 @@ public class ChatClientHandler extends Thread{
 			if (line.equals("<start>")) {
 				line = "";
 				while (!(line = reader.readLine()).equals("<end>")) {
-					msg += line + "\n";	
-					System.out.println(line);
+					msg += line + "\n";						
 				}
 				message.createNew(msg);
 				if (message.good()) {
