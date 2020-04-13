@@ -49,16 +49,17 @@ public class ChatClientHandler extends Thread{
 		reader = new BufferedReader(new InputStreamReader(inputStream));
 		String line;
 		String msg = "";
-		Message message = null;
-		while ((line = reader.readLine()) != null && message == null) {
+		Message message = new Message();
+		while ((line = reader.readLine()) != null) {
+			msg = "";
 			if (line.equals("<start>")) {
 				line = "";
 				while (!(line = reader.readLine()).equals("<end>")) {
 					msg += line + "\n";	
+					System.out.println(line);
 				}
-				message  = new Message(msg);
+				message.createNew(msg);
 				handleMessage(message);
-				message = null;
 			}
 		}
 	}
@@ -68,11 +69,10 @@ public class ChatClientHandler extends Thread{
 	public void handleMessage(Message msg) {
 		if (msg.getMethod().equals("REQUEST")) {
 			if (msg.getCommand().equals("LOGIN")) {
-				handleLogin(msg.getBody(), "123");
-				System.out.println("Trying to login: " + msg.getBody());
+				handleLogin(msg.getSender(), "123");
 			}
 		}
-		if (!isLogin()) {
+		else if (!isLogin()) {
 			try {
 				outputStream.write("You have to login first.".getBytes());
 			} catch (IOException e) {
@@ -93,6 +93,7 @@ public class ChatClientHandler extends Thread{
 			System.out.println(name + " login successfully at " + new Date() + "\n");
 			ArrayList<ChatClientHandler> onlineList  = this.chatServer.getClientList();
 			if (onlineList.size() == 0) {
+				outputStream.write("Login successfully\n".getBytes());
 				outputStream.write("Noone online\n".getBytes());
 			}
 			else {

@@ -17,20 +17,19 @@ public class SendThread implements Runnable {
 	}
 	
 	public void run() {
+		boolean sendLoginRequest = false;
 		while (!client.getSocket().isClosed()) {
-			if (!this.client.isLogin()) {
-				this.client.login();
+			if (!this.client.isLogin() && !sendLoginRequest) {
+				sendLoginRequest = true;
 				msg += "REQUEST LOGIN\n";
 				msg += this.client.getName() + " server\n";
 				msg += "\n";
 				msg += this.client.getName() + "\n";
 			}
 			else {
-				if (scn.hasNext()) {
-					msg += "SEND MSG\n";
-					msg += "tandat mylove\n";
-					System.out.print("[" + this.client.getName() + "]: ");
-					msg += scn.nextLine();
+				if (scn.hasNext() && client.isLogin()) {
+					System.out.println("[" + this.client.getName() + "]: " + (msg = scn.nextLine()));
+					msg = "SEND MSG\n" + "tandat mylove\n" + "\n" + msg + "\n"; 
 				}
 			}
 			try {
@@ -44,6 +43,7 @@ public class SendThread implements Runnable {
 	
 	public void send(String msg) throws IOException {
 		msg = "<start>\n" + msg + "\n<end>\n"; 
+		outputStream.flush();
 		outputStream.write(msg.getBytes());
 	}
 	

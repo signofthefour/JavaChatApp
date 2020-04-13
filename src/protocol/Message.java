@@ -22,20 +22,34 @@ public class Message {
 	private String receiver;
 	private String body = "";
 	
+	public Message() {
+		msg = "";
+		method = "";
+		cmd = "";
+		sender = "";
+		receiver = "";
+		body = "";
+	}
 	public Message(String s) {
 		this.msg = s;
-		handle();
+		init();
 	}
 	
-	public void handle() {
+	public void createNew(String msg) {
+		this.msg = msg;
+		init();
+	}
+	
+	public void init() {
 		String[] lines = msg.split("\n");
 		// Get method and cmd
 		this.method = lines[0].split(" ")[0];
 		this.cmd 	= lines[0].split(" ")[1];
 		this.sender = lines[1].split(" ")[0];
 		this.receiver=lines[1].split(" ")[1];
+		body = "";
 		for (int i = 3; i < lines.length; i++) {
-			body += lines[1] + '\n';
+			body += lines[i] + '\n';
 		}
 	}
 	

@@ -34,7 +34,11 @@ public class ReceiveThread implements Runnable {
 //				System.out.println("[" + message.getSender() + "]: " + message.getBody());
 				if ((line = bf.readLine()) != null) {
 					System.out.println("[server]: " + line);
+					if (line.equals("Login successfully")) {
+						this.client.login();
+					}
 				}
+				line = "";
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
