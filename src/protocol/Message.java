@@ -1,10 +1,11 @@
 package protocol;
 
+//<start>
 //<METHOD> <COMMAND>
 //<sender> <receiver>
 //<blank line>
-//<body>
-//<msgend>
+//(body)...
+//<end>
 
 // METHOD:
 //		REQUEST: 

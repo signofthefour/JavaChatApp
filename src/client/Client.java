@@ -9,6 +9,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 public class Client {
+	private boolean isLogin = false;
 
 	public static void main(String[] args) {
 		if (args.length < 2) {
@@ -46,4 +47,6 @@ public class Client {
 			e.printStackTrace();
 		}
 	}
+	
+	public boolean isLogin() { return isLogin; }
 }
