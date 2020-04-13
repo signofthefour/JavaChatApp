@@ -22,7 +22,7 @@ public class ReceiveThread implements Runnable {
 	@Override 
 	public void run() {
 		String line;
-		while (!client.getSocket().isClosed()) {
+		if (!client.getSocket().isClosed()) {
 			try {
 //				msg = "";
 //				if ((line = bf.readLine()) == "<start>") {
@@ -32,10 +32,21 @@ public class ReceiveThread implements Runnable {
 //				}
 //				message = new Message(msg);
 //				System.out.println("[" + message.getSender() + "]: " + message.getBody());
-				if ((line = bf.readLine()) != null) {
-					System.out.println("[server]: " + line);
-					if (line.equals("Login successfully")) {
-						this.client.login();
+				while (!client.isLogin()) {
+					System.out.println("==========================");
+					if ((line = bf.readLine()) != null) {
+						System.out.println("[server]: " + line);
+						if (line.contains("200")) {
+							System.out.println("Connected in receiver...");
+							this.client.loginSuccess();
+						} else {
+							System.out.println("[server]: Please login.");
+						}
+					}
+				}
+				while (client.isLogin()) {
+					if ((line = bf.readLine()) != null) {
+						System.out.println("[server]: " + line);
 					}
 				}
 				line = "";

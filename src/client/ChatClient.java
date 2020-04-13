@@ -8,8 +8,13 @@ public class ChatClient implements Runnable {
 	private String name;
 	private InputStream in;
 	private OutputStream out;
-	private boolean isLogin = false;
 	private Socket socket;
+	
+	class Control {
+		private volatile boolean loginStatus = false;
+	}
+	
+	final Control control = new Control();
 	
 	public ChatClient(String name, InputStream in, OutputStream out, Socket socket) {
 		this.name = name;
@@ -22,10 +27,10 @@ public class ChatClient implements Runnable {
 	public Socket getSocket() { return socket; }
 	public InputStream getInputStream() { return in; }
 	public OutputStream getOutputStream() { return out; }
-	public boolean isLogin() { return isLogin; }
-	public void login() {this.isLogin = true; }
+	public boolean isLogin() { return control.loginStatus; }
+	public void loginSuccess() {control.loginStatus = true; }
 	public void disconnect() {
-		this.isLogin = false;
+		control.loginStatus = false;
 	}
 	
 	@Override

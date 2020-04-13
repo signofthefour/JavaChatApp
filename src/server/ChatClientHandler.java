@@ -59,7 +59,10 @@ public class ChatClientHandler extends Thread{
 					System.out.println(line);
 				}
 				message.createNew(msg);
-				handleMessage(message);
+				if (message.good()) {
+					handleMessage(message);
+					message.clear();
+				}
 			}
 		}
 	}
@@ -75,11 +78,17 @@ public class ChatClientHandler extends Thread{
 		else if (!isLogin()) {
 			try {
 				outputStream.write("You have to login first.".getBytes());
+				outputStream.flush();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		} else {
-			System.out.println("[" + msg.getSender() +"]: " + msg.getBody());
+			try {
+				System.out.println("[" + msg.getSender() +"]: " + msg.getBody());
+				outputStream.flush();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -90,19 +99,20 @@ public class ChatClientHandler extends Thread{
 		String onlineClients;
 		
 		try {
-			System.out.println(name + " login successfully at " + new Date() + "\n");
 			ArrayList<ChatClientHandler> onlineList  = this.chatServer.getClientList();
+			outputStream.write("SEND 200\n".getBytes());
 			if (onlineList.size() == 0) {
-				outputStream.write("Login successfully\n".getBytes());
 				outputStream.write("Noone online\n".getBytes());
 			}
 			else {
 				onlineClients = "";
 				for (ChatClientHandler chatClient : onlineList) {
-					onlineClients += chatClient.getClientName() + '\n';
+					onlineClients += chatClient.getClientName() + "\n";
 				}
 				outputStream.write(("Online: \n" + onlineClients).getBytes());
 			}
+			System.out.println(name + " login successfully at " + new Date() + "\n");
+			this.outputStream.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -123,7 +133,6 @@ public class ChatClientHandler extends Thread{
 			inputStream.close();
 			reader.close();
 			clientSocket.close();
-			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -138,6 +147,7 @@ public class ChatClientHandler extends Thread{
 					client.outputStream.write(loginMsg.getBytes());
 				}
 			} 
+			outputStream.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -152,7 +162,8 @@ public class ChatClientHandler extends Thread{
 				for (ChatClientHandler client : this.chatServer.getClientList()) {
 					client.outputStream.write(logoutMsg.getBytes());
 				}
-			} 
+			}
+			outputStream.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
