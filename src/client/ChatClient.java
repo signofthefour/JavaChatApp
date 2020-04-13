@@ -8,7 +8,7 @@ public class ChatClient implements Runnable {
 	private String name;
 	private InputStream in;
 	private OutputStream out;
-	private boolean isLogin;
+	private boolean isLogin = false;
 	private Socket socket;
 	
 	public ChatClient(String name, InputStream in, OutputStream out, Socket socket) {

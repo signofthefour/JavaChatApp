@@ -49,15 +49,16 @@ public class ChatClientHandler extends Thread{
 		reader = new BufferedReader(new InputStreamReader(inputStream));
 		String line;
 		String msg = "";
-		Message message;
-		while ((line = reader.readLine()) != null) {
-			System.out.println("Have msg...");
+		Message message = null;
+		while ((line = reader.readLine()) != null && message == null) {
 			if (line.equals("<start>")) {
+				line = "";
 				while (!(line = reader.readLine()).equals("<end>")) {
 					msg += line + "\n";	
 				}
 				message  = new Message(msg);
 				handleMessage(message);
+				message = null;
 			}
 		}
 	}
@@ -67,7 +68,7 @@ public class ChatClientHandler extends Thread{
 		if (msg.getMethod().equals("REQUEST")) {
 			if (msg.getCommand().equals("LOGIN")) {
 				handleLogin(msg.getBody(), "123");
-				System.out.println("Login: " + msg.getBody());
+				System.out.println("Trying to login: " + msg.getBody());
 			}
 		}
 		if (!isLogin()) {
@@ -76,6 +77,8 @@ public class ChatClientHandler extends Thread{
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+		} else {
+			System.out.println("[" + msg.getSender() +"]: " + msg.getBody());
 		}
 	}
 	

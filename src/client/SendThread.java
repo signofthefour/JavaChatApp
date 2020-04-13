@@ -8,7 +8,7 @@ import java.util.Scanner;
 public class SendThread implements Runnable {
 	private OutputStream outputStream;
 	private ChatClient client;
-	private String msg;
+	private String msg = "";
 	private Scanner scn = new Scanner (System.in);
 	
 	public SendThread(OutputStream out, ChatClient client) {
@@ -26,9 +26,12 @@ public class SendThread implements Runnable {
 				msg += this.client.getName() + "\n";
 			}
 			else {
-				msg += "SEND MSG\n";
-				msg += "tandat mylove\n";
-				System.out.println("[tandat]: " + (msg = scn.nextLine()));
+				if (scn.hasNext()) {
+					msg += "SEND MSG\n";
+					msg += "tandat mylove\n";
+					System.out.print("[" + this.client.getName() + "]: ");
+					msg += scn.nextLine();
+				}
 			}
 			try {
 				send(msg);
@@ -40,7 +43,7 @@ public class SendThread implements Runnable {
 	}
 	
 	public void send(String msg) throws IOException {
-		msg = "<start>\n" + msg + "\n<end>"; 
+		msg = "<start>\n" + msg + "\n<end>\n"; 
 		outputStream.write(msg.getBytes());
 	}
 	
