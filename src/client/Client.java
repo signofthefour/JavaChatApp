@@ -27,15 +27,8 @@ public class Client {
 			InputStream inputStream = socket.getInputStream();
 			
 			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-			String msg = "";
-			msg += "<start>\n";
-			msg += "REQUEST LOGIN\n";
-			msg += "client server\n";
-			msg += "\n";
-			msg += "tandat\n";
-			msg += "<end>\n";
-			
-			outputStream.write(msg.getBytes());
+
+			//TODO: split into two thread do handle in and out simutainously
 
 			String line = "";
 			while ((line = bufferedReader.readLine()) != null) {

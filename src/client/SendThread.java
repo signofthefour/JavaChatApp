@@ -14,7 +14,21 @@ public class SendThread extends Thread {
 	}
 	
 	public void work() {
+		if (!this.client.isLogin()) {
+			msg += "<start>\n";
+			msg += "REQUEST LOGIN\n";
+			msg += "client server\n";
+			msg += "\n";
+			msg += "tandat\n";
+			msg += "<end>\n";
+		}
 		
+		try {
+			outputStream.write(msg.getBytes());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public void send(String msg) throws IOException {
