@@ -8,7 +8,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-public class ChatClient {
+public class Client {
 
 	public static void main(String[] args) {
 		if (args.length < 2) {
