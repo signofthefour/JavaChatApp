@@ -63,6 +63,7 @@ public class ChatClientHandler extends Thread{
 		}
 	}
 	
+	//TODO: create two thread to handle both send and receive msg
 	
 	public void handleMessage(Message msg) {
 		if (msg.getMethod().equals("REQUEST")) {
