@@ -25,6 +25,7 @@ public class SendThread implements Runnable {
 				msg += this.client.getName() + " server\n";
 				msg += "\n";
 				msg += this.client.getName() + "\n";
+				System.out.println(">???");
 			}
 			else {
 				if (scn.hasNext() && client.isLogin()) {

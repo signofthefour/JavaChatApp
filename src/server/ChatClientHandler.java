@@ -56,7 +56,7 @@ public class ChatClientHandler extends Thread{
 				line = "";
 				while (!(line = reader.readLine()).equals("<end>")) {
 					msg += line + "\n";	
-//					System.out.println(line);
+					System.out.println(line);
 				}
 				message.createNew(msg);
 				handleMessage(message);
@@ -79,7 +79,6 @@ public class ChatClientHandler extends Thread{
 				e.printStackTrace();
 			}
 		} else {
-			// FIXING: the more than one cannot work well
 			System.out.println("[" + msg.getSender() +"]: " + msg.getBody());
 		}
 	}

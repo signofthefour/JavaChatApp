@@ -41,8 +41,11 @@ public class Message {
 	}
 	
 	public void init() {
+		System.out.println("=================");
+		System.out.println(msg);
 		String[] lines = msg.split("\n");
-		// Get method and cmd
+		if (lines.length < 3) return;
+		// Get method and command
 		this.method = lines[0].split(" ")[0];
 		this.cmd 	= lines[0].split(" ")[1];
 		this.sender = lines[1].split(" ")[0];
