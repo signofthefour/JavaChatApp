@@ -38,7 +38,8 @@ public class DirectMessage implements Runnable {
 	
 	public ChatClientHandler findClient(String name, ArrayList<ChatClientHandler> clients) {
 	    for (ChatClientHandler client : clients) {
-	    	if (client.getName().equals(name)) {
+	    	System.out.println(client.getClientName());
+	    	if (client.getClientName().equals(name)) {
 	    		return client;
 	    	}
 	    }
