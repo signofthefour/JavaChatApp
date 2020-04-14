@@ -9,19 +9,39 @@ import java.net.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Queue;
+
 import protocol.Message;
 
 import server.ChatServer;
 
 public class ChatClientHandler extends Thread{
-	private ChatServer chatServer;
-	private Socket clientSocket;
-	private String clientName;
-	private String clientPassword;
-	OutputStream outputStream;
-	InputStream inputStream;
-	BufferedReader reader;
-	private boolean loginStatus = false;
+	class ChatQueue {
+		private volatile Queue<Message> messageQueue;
+		
+		public Message next() {
+			return this.messageQueue.poll();
+		}
+		
+		public void add(Message message) {
+			this.messageQueue.add(message);
+		}
+		
+		public boolean hasNext() {
+			return this.messageQueue.peek() != null;
+		}
+	}
+	
+	final ChatQueue chatQueue = new ChatQueue();
+	
+	private ChatServer 	chatServer;
+	private Socket 		clientSocket;
+	private String 		clientName;
+	private String 		clientPassword;
+	OutputStream 		outputStream;
+	InputStream 		inputStream;
+	BufferedReader 		reader;
+	private boolean 	loginStatus = false;
 	
 	public boolean isLogin() { return loginStatus; }
 	public String getClientName() { return clientName; }
