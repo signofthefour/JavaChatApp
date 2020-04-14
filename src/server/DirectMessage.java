@@ -27,19 +27,20 @@ public class DirectMessage implements Runnable {
 	public void direct(Message msg) {
 		String receiverName = msg.getReceiver();
 		msg.setReceiveMethod();
+		System.out.println(receiverName);
 		ChatClientHandler receiver = findClient(receiverName, this.chatServer.getClientList());
 		if (receiver != null) {
 			receiver.chatQueue.add(msg);
+		} else {
+			System.out.println("Reach here?");
 		}
 	}
 	
 	public ChatClientHandler findClient(String name, ArrayList<ChatClientHandler> clients) {
-	    Iterator<ChatClientHandler> iterator = clients.iterator();
-	    while (iterator.hasNext()) {
-	        ChatClientHandler client = iterator.next();
-	        if (client.getName().equals(name)) {
-	            return client;
-	        }
+	    for (ChatClientHandler client : clients) {
+	    	if (client.getName().equals(name)) {
+	    		return client;
+	    	}
 	    }
 	    return null;
 	}
