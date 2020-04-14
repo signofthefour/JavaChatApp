@@ -31,9 +31,23 @@ public class ChatClientHandler extends Thread{
 		public boolean hasNext() {
 			return this.messageQueue.peek() != null;
 		}
+		
+	}
+	
+	class Output {
+		private volatile Message outMessage = null;
+		
+		public Message getOutMessage() {
+			return outMessage;
+		}
+		
+		public void setOutMessage(Message msg) {
+			this.outMessage = msg;
+		}
 	}
 	
 	final ChatQueue chatQueue = new ChatQueue();
+	final Output chatOut = new Output();
 	
 	private ChatServer 	chatServer;
 	private Socket 		clientSocket;
@@ -43,7 +57,6 @@ public class ChatClientHandler extends Thread{
 	InputStream 		inputStream;
 	BufferedReader 		reader;
 	private boolean 	loginStatus = false;
-	private Message outMessage = null;
 	
 	private Thread chatClientInHandler;
 	private Thread chatClientOutHandler;
@@ -71,7 +84,7 @@ public class ChatClientHandler extends Thread{
 		inputStream = clientSocket.getInputStream();
 		
 		ChatClientInHandler chatClientInput = new ChatClientInHandler(inputStream, this);
-		ChatClientOutHandler chatClientOutput = new ChatClientOutHandler(outputStream, outMessage);
+		ChatClientOutHandler chatClientOutput = new ChatClientOutHandler(outputStream, this);
 		
 		chatClientInHandler = new Thread(chatClientInput);
 		chatClientOutHandler = new Thread(chatClientOutput);
@@ -199,6 +212,6 @@ public class ChatClientHandler extends Thread{
 	}
 	
 	public void pullMessage(Message msg) {
-		outMessage = msg;
+		this.chatOut.setOutMessage(msg);
 	}
 }

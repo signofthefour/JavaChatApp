@@ -8,11 +8,13 @@ import protocol.Message;
 public class ChatClientOutHandler implements Runnable {
 	
 	private OutputStream outputStream;
+	private ChatClientHandler client;
 	private Message message;
 
-	public ChatClientOutHandler(OutputStream outputStream, Message msg) {
+	public ChatClientOutHandler(OutputStream outputStream, ChatClientHandler client) {
 		this.outputStream  = outputStream;
-		this.message = msg;
+		this.client = client;
+		this.message = this.client.chatOut.getOutMessage();
 	}
 	
 	@Override
@@ -21,6 +23,7 @@ public class ChatClientOutHandler implements Runnable {
 		while (true) {
 			if (message != null) {
 				try {
+					System.out.println("?????????????/");
 					outputStream.write(message.toText().getBytes());
 					message = null;
 				} catch (IOException e) {
