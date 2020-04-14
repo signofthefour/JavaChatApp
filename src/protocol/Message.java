@@ -84,10 +84,13 @@ public class Message {
 	}
 	
 	public String toText() {
-		String text = method + " " + cmd + "\n";
+		String text = "";
+		text += "<start>\n";
+		text = method + " " + cmd + "\n";
 		text +=  sender + " " + receiver + "\n";
 		text += "\n";
 		text += body + "\n";
+		text += "<end>\n";
 		return text;
 	}
 }

@@ -42,7 +42,6 @@ public class ChatClientInHandler implements Runnable {
 					line = "";
 					while (!(line = reader.readLine()).equals("<end>")) {
 						msg += line + "\n";
-						System.out.println(line);
 					}
 					message.createNew(msg);
 				}

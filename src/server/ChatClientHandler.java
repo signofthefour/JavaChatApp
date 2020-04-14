@@ -138,17 +138,18 @@ public class ChatClientHandler extends Thread{
 		
 		try {
 			ArrayList<ChatClientHandler> onlineList  = this.chatServer.getClientList();
-			outputStream.write("SEND 200\n".getBytes());
+			String loginSuccessMessage = "SEND 200\nserver " + this.getClientName() + "\n";
 			if (onlineList.size() == 0) {
-				outputStream.write("Noone online\n".getBytes());
+				loginSuccessMessage += "Login successfully\nNoone online\n";
 			}
 			else {
 				onlineClients = "";
 				for (ChatClientHandler chatClient : onlineList) {
 					onlineClients += chatClient.getClientName() + "\n";
 				}
-				outputStream.write(("Online: \n" + onlineClients).getBytes());
+				loginSuccessMessage = "Online: \n" + onlineClients;
 			}
+			outputStream.write(("<start>\n" + loginSuccessMessage + "\n<end>\n").getBytes());
 			System.out.println(name + " login successfully at " + new Date() + "\n");
 			this.outputStream.flush();
 		} catch (IOException e) {

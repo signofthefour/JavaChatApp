@@ -10,8 +10,8 @@ public class ReceiveThread implements Runnable {
 	private InputStream inputStream;
 	private BufferedReader bf;
 	private ChatClient client;
-	Message message;
-	String msg;
+	Message message = new Message();
+	String msg = "";
 	
 	public ReceiveThread(InputStream in, ChatClient client) {
 		this.inputStream = in;
@@ -24,30 +24,33 @@ public class ReceiveThread implements Runnable {
 		String line;
 		if (!client.getSocket().isClosed()) {
 			try {
-//				msg = "";
-//				if ((line = bf.readLine()) == "<start>") {
-//					while ((line = bf.readLine()) != "<end>") {
-//						msg += line + "\n";
-//					}
-//				}
-//				message = new Message(msg);
-//				System.out.println("[" + message.getSender() + "]: " + message.getBody());
 				while (!client.isLogin()) {
-					System.out.println("==========================");
-					if ((line = bf.readLine()) != null) {
-						System.out.println("[server]: " + line);
-						if (line.contains("200")) {
-							System.out.println("Connected in receiver...");
+					msg = "";
+					try {
+						if ((line = bf.readLine()).contentEquals("<start>")) {
+							while ((line = bf.readLine()) != "<end>") {
+								msg += line + "\n";
+							}
+							message = new Message(msg);
+							System.out.println(message.getMethod());
+							if (message.getCommand().equals("200")) {
+								System.out.println("[" + message.getSender() + "]: " + message.getBody());
+							}
 							this.client.loginSuccess();
-						} else {
-							System.out.println("[server]: Please login.");
 						}
+					} catch (IOException e) {
+						e.printStackTrace();
 					}
 				}
 				while (client.isLogin()) {
-					if ((line = bf.readLine()) != null) {
-						System.out.println("[server]: " + line);
+					msg = "";
+					if ((line = bf.readLine()) == "<start>") {
+						while ((line = bf.readLine()) != "<end>") {
+							msg += line + "\n";
+						}
 					}
+					message = new Message(msg);
+					System.out.println("[" + message.getSender() + "]: " + message.getBody());
 				}
 				line = "";
 			} catch (IOException e) {
