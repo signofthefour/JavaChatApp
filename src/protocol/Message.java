@@ -12,6 +12,8 @@ package protocol;
 //			CMD: LOGIN, LOGOUT
 //		SEND: 
 //			 CMD: MSG, GROUP
+//		RECV:
+//			CMD: MSG, FILE
 
 public class Message {
 	
@@ -63,6 +65,10 @@ public class Message {
 	public String getReceiver() {return this.receiver; }
 	
 	public String getBody() { return this.body; }
+	
+	public void setReceiveMethod() {
+		this.method = "RECV";
+	}
 	
 	public boolean good() {
 		return method != "" && cmd != "" && sender != "" && receiver != ""; 

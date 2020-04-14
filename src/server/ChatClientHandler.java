@@ -102,11 +102,15 @@ public class ChatClientHandler extends Thread{
 			}
 		// HAS BEEN LOGIN 
 		} else {
-			try {
-				System.out.println("[" + msg.getSender() +"]: " + msg.getBody());
-				outputStream.flush();
-			} catch (IOException e) {
-				e.printStackTrace();
+			if (msg.getMethod().equals("SEND")) {
+				if (msg.getCommand().equals("MSG")) {
+					pushMessage(msg);
+				}
+			}
+			if (msg.getMethod().equals("RECV")) {
+				if (msg.getCommand().equals("MSG")) {
+					pullMessage(msg);
+				}
 			}
 		}
 	}
@@ -186,5 +190,9 @@ public class ChatClientHandler extends Thread{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public void pushMessage(Message msg) {
+		this.chatServer.chatQueue.add(msg);
 	}
 }

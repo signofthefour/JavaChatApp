@@ -10,6 +10,7 @@ public class SendThread implements Runnable {
 	private ChatClient client;
 	private String msg = "";
 	private Scanner scn = new Scanner (System.in);
+	private String receiver = "";
 	
 	public SendThread(OutputStream out, ChatClient client) {
 		this.outputStream = out;
@@ -22,6 +23,7 @@ public class SendThread implements Runnable {
 //			System.out.println("Loading...");
 		}
 		System.out.println("You can chat");
+		receiver = getReceiverName();
 		sendRequest();
 	}
 	
@@ -33,11 +35,10 @@ public class SendThread implements Runnable {
 	public void sendRequest() {
 		while (!client.getSocket().isClosed() && client.isLogin()) {
 			msg = "";
-			
 			if (scn.hasNext()) {
 				System.out.println("[" + this.client.getName() + "]: " + (msg = scn.nextLine()));
 				if ((msg = msg.trim()).length() > 0) {
-					msg = "SEND MSG\n" + this.client.getName() + " mylove\n" + "\n" + msg + "\n";
+					msg = "SEND MSG\n" + this.client.getName() + " " + receiver + "\n" + "\n" + msg + "\n";
 				}
 			}
 			try {
@@ -46,6 +47,11 @@ public class SendThread implements Runnable {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	public String getReceiverName () {
+		System.out.print("Who you want chat with: ");
+		return scn.nextLine();
 	}
 	
 	public void loginRequest() {
