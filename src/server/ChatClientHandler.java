@@ -77,20 +77,10 @@ public class ChatClientHandler extends Thread{
 		chatClientInHandler.start();
 		chatClientOutHandler = new Thread();
 		
-		
 		// TODO: synchronize the chat queue
-		synchronized(chatClientInHandler) {
-			while (this.isConnected()) {
-				if (this.chatQueue.hasNext()) {
-					handleMessage(this.chatQueue.next());
-				} else  {
-					try {
-						chatClientInHandler.wait();
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
+		while (true) {
+			if (this.chatQueue.hasNext()) {
+				handleMessage(this.chatQueue.next());
 			}
 		}
 	}
