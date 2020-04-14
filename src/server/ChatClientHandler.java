@@ -43,6 +43,8 @@ public class ChatClientHandler extends Thread{
 	InputStream 		inputStream;
 	BufferedReader 		reader;
 	private boolean 	loginStatus = false;
+	private Thread chatClientInHandler;
+	private Thread chatClientOutHandler;
 	
 	public boolean isLogin() { return loginStatus; }
 	public String getClientName() { return clientName; }
@@ -65,12 +67,30 @@ public class ChatClientHandler extends Thread{
 	public void handleSocket() throws IOException {
 		outputStream = clientSocket.getOutputStream();
 		inputStream = clientSocket.getInputStream();
+		
 		ChatClientInHandler chatClientInput = new ChatClientInHandler(inputStream, this);
-		Thread chatClientInHandler = new Thread(chatClientInput);
+		ChatClientOutHandler chatClientOutput = new ChatClientOutHandler(outputStream);
+		
+		chatClientInHandler = new Thread(chatClientInput);
+		chatClientOutHandler = new Thread(chatClientOutput);
+		
 		chatClientInHandler.start();
-		while (this.isConnected()) {
-			if (this.chatQueue.hasNext()) {
-				handleMessage(this.chatQueue.next());
+		chatClientOutHandler = new Thread();
+		
+		
+		// TODO: synchronize the chat queue
+		synchronized(chatClientInHandler) {
+			while (this.isConnected()) {
+				if (this.chatQueue.hasNext()) {
+					handleMessage(this.chatQueue.next());
+				} else  {
+					try {
+						chatClientInHandler.wait();
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
 			}
 		}
 	}

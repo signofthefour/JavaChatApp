@@ -21,12 +21,16 @@ public class ChatClientInHandler implements Runnable {
 
 	@Override
 	public void run() {
-		while (chatClientHandler.isConnected()) {
-			Message newMsg = getMessage();
-			if (newMsg != null) {
-				this.chatClientHandler.chatQueue.add(newMsg);
-			} else {
-				continue;
+		// TODO: synchronized the chat queue
+		synchronized (this) {
+			while (chatClientHandler.isConnected()) {
+				Message newMsg = getMessage();
+				if (newMsg != null) {
+					this.chatClientHandler.chatQueue.add(newMsg);
+					notify();
+				} else {
+					continue;
+				}
 			}
 		}
 	}
