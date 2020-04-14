@@ -43,6 +43,8 @@ public class ChatClientHandler extends Thread{
 	InputStream 		inputStream;
 	BufferedReader 		reader;
 	private boolean 	loginStatus = false;
+	private Message outMessage = null;
+	
 	private Thread chatClientInHandler;
 	private Thread chatClientOutHandler;
 	
@@ -69,13 +71,13 @@ public class ChatClientHandler extends Thread{
 		inputStream = clientSocket.getInputStream();
 		
 		ChatClientInHandler chatClientInput = new ChatClientInHandler(inputStream, this);
-		ChatClientOutHandler chatClientOutput = new ChatClientOutHandler(outputStream);
+		ChatClientOutHandler chatClientOutput = new ChatClientOutHandler(outputStream, outMessage);
 		
 		chatClientInHandler = new Thread(chatClientInput);
 		chatClientOutHandler = new Thread(chatClientOutput);
 		
 		chatClientInHandler.start();
-		chatClientOutHandler = new Thread();
+		chatClientOutHandler.start();
 		
 		// TODO: synchronize the chat queue
 		while (true) {
@@ -194,5 +196,9 @@ public class ChatClientHandler extends Thread{
 	
 	public void pushMessage(Message msg) {
 		this.chatServer.chatQueue.add(msg);
+	}
+	
+	public void pullMessage(Message msg) {
+		outMessage = msg;
 	}
 }

@@ -82,4 +82,12 @@ public class Message {
 		receiver = "";
 		body = "";
 	}
+	
+	public String toText() {
+		String text = method + " " + cmd + "\n";
+		text +=  sender + " " + receiver + "\n";
+		text += "\n";
+		text += body + "\n";
+		return text;
+	}
 }
