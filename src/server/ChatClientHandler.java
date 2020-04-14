@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
@@ -17,7 +18,7 @@ import server.ChatServer;
 
 public class ChatClientHandler extends Thread{
 	class ChatQueue {
-		private volatile Queue<Message> messageQueue;
+		private volatile Queue<Message> messageQueue = new LinkedList<Message>();
 		
 		public Message next() {
 			return this.messageQueue.poll();
@@ -67,34 +68,35 @@ public class ChatClientHandler extends Thread{
 		ChatClientInHandler chatClientInput = new ChatClientInHandler(inputStream, this);
 		Thread chatClientInHandler = new Thread(chatClientInput);
 		chatClientInHandler.start();
+		while (this.isConnected()) {
+			if (this.chatQueue.hasNext()) {
+				handleMessage(this.chatQueue.next());
+			}
+		}
 	}
 	
 	public void handleMessage(Message msg) {
-		while (this.isConnected()) {
-			if (this.chatQueue.hasNext()) {
-				// REQUEST: LOGIN
-				if (msg.getMethod().equals("REQUEST")) {
-					if (msg.getCommand().equals("LOGIN")) {
-						handleLogin(msg.getSender(), "123");
-					}
-				}
-				// NOT LOGIN YET
-				else if (!isLogin()) {
-					try {
-						outputStream.write("You have to login first.".getBytes());
-						outputStream.flush();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				// HAS BEEN LOGIN 
-				} else {
-					try {
-						System.out.println("[" + msg.getSender() +"]: " + msg.getBody());
-						outputStream.flush();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
+		// REQUEST: LOGIN
+		if (msg.getMethod().equals("REQUEST")) {
+			if (msg.getCommand().equals("LOGIN")) {
+				handleLogin(msg.getSender(), "123");
+			}
+		}
+		// NOT LOGIN YET
+		else if (!isLogin()) {
+			try {
+				outputStream.write("You have to login first.".getBytes());
+				outputStream.flush();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		// HAS BEEN LOGIN 
+		} else {
+			try {
+				System.out.println("[" + msg.getSender() +"]: " + msg.getBody());
+				outputStream.flush();
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 		}
 	}

@@ -25,6 +25,8 @@ public class ChatClientInHandler implements Runnable {
 			Message newMsg = getMessage();
 			if (newMsg != null) {
 				this.chatClientHandler.chatQueue.add(newMsg);
+			} else {
+				continue;
 			}
 		}
 	}
@@ -34,7 +36,7 @@ public class ChatClientInHandler implements Runnable {
 		String msg = "";
 		Message message = new Message();
 		try {
-			while ((line = reader.readLine()) != null) {
+			if ((line = reader.readLine()) != null) {
 				msg = "";
 				if (line.equals("<start>")) {
 					line = "";
@@ -47,13 +49,12 @@ public class ChatClientInHandler implements Runnable {
 			if (message.good()) {
 				return message;
 			} else {
-				System.out.println("kajsdfhjfjkahsfklj");
 				return null;
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		return null;
 	}
-	
 }
