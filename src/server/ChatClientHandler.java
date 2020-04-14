@@ -45,6 +45,7 @@ public class ChatClientHandler extends Thread{
 	
 	public boolean isLogin() { return loginStatus; }
 	public String getClientName() { return clientName; }
+	public boolean isConnected() { return clientSocket.isConnected(); }
 	
 	public ChatClientHandler(Socket clientSocket, ChatServer server) {
 		this.clientSocket = clientSocket;
@@ -60,51 +61,40 @@ public class ChatClientHandler extends Thread{
 		}
 	}
 	
-
-	
 	public void handleSocket() throws IOException {
 		outputStream = clientSocket.getOutputStream();
 		inputStream = clientSocket.getInputStream();
-
-		reader = new BufferedReader(new InputStreamReader(inputStream));
-		String line;
-		String msg = "";
-		Message message = new Message();
-		while ((line = reader.readLine()) != null) {
-			msg = "";
-			if (line.equals("<start>")) {
-				line = "";
-				while (!(line = reader.readLine()).equals("<end>")) {
-					msg += line + "\n";						
-				}
-				message.createNew(msg);
-				if (message.good()) {
-					handleMessage(message);
-					message.clear();
-				}
-			}
-		}
+		ChatClientInHandler chatClientInput = new ChatClientInHandler(inputStream, this);
+		Thread chatClientInHandler = new Thread(chatClientInput);
+		chatClientInHandler.start();
 	}
 	
 	public void handleMessage(Message msg) {
-		if (msg.getMethod().equals("REQUEST")) {
-			if (msg.getCommand().equals("LOGIN")) {
-				handleLogin(msg.getSender(), "123");
-			}
-		}
-		else if (!isLogin()) {
-			try {
-				outputStream.write("You have to login first.".getBytes());
-				outputStream.flush();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		} else {
-			try {
-				System.out.println("[" + msg.getSender() +"]: " + msg.getBody());
-				outputStream.flush();
-			} catch (IOException e) {
-				e.printStackTrace();
+		while (this.isConnected()) {
+			if (this.chatQueue.hasNext()) {
+				// REQUEST: LOGIN
+				if (msg.getMethod().equals("REQUEST")) {
+					if (msg.getCommand().equals("LOGIN")) {
+						handleLogin(msg.getSender(), "123");
+					}
+				}
+				// NOT LOGIN YET
+				else if (!isLogin()) {
+					try {
+						outputStream.write("You have to login first.".getBytes());
+						outputStream.flush();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				// HAS BEEN LOGIN 
+				} else {
+					try {
+						System.out.println("[" + msg.getSender() +"]: " + msg.getBody());
+						outputStream.flush();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
 			}
 		}
 	}
