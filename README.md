@@ -17,10 +17,13 @@ Oke, run this:
 
 - In your client terminal (now it does not have GUI, we are implement this shit), to chat with somebody
 1. Enter your name and wait for connected notify
-  e.g.: tandat
+ 
+	 e.g.: tandat
 2. To chat with someone: <nameOfSomeOne> <Enter> <yourMessage> <Enter>
-  e.g.: mylove
-        I love you.
+  
+	e.g.: 	mylove
+
+        	I love you.
 
 
 
