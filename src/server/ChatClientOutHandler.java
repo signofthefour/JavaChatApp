@@ -21,10 +21,10 @@ public class ChatClientOutHandler implements Runnable {
 	public void run() {
 		// TODO Auto-generated method stub
 		while (true) {
-			if (client.chatOut.getOutMessage() != null) {
+			if (client.chatOut.getOutMessage().good()) {
 				try {
 					outputStream.write(client.chatOut.getOutMessage().toText().getBytes());
-					client.chatOut.setOutMessage(null);
+					client.chatOut.clear();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

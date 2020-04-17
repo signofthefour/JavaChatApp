@@ -35,7 +35,7 @@ public class ChatClientHandler extends Thread{
 	}
 	
 	class Output {
-		private volatile Message outMessage = null;
+		private volatile Message outMessage = new Message();
 		
 		public Message getOutMessage() {
 			return outMessage;
@@ -43,6 +43,10 @@ public class ChatClientHandler extends Thread{
 		
 		public void setOutMessage(Message msg) {
 			this.outMessage = msg;
+		}
+		
+		public void clear() {
+			this.outMessage.clear();
 		}
 	}
 	
@@ -126,6 +130,9 @@ public class ChatClientHandler extends Thread{
 				if (msg.getCommand().equals("MSG")) {
 					pullMessage(msg);
 				}
+			} else {
+				System.out.println("Not support...");	
+				System.out.println(msg.toText());
 			}
 		}
 	}
@@ -138,7 +145,7 @@ public class ChatClientHandler extends Thread{
 		
 		try {
 			ArrayList<ChatClientHandler> onlineList  = this.chatServer.getClientList();
-			String loginSuccessMessage = "SEND 200\nserver " + this.getClientName() + "\n";
+			String loginSuccessMessage = "RECV 200\nserver " + this.getClientName() + "\n";
 			if (onlineList.size() == 0) {
 				loginSuccessMessage += "Login successfully\nNoone online\n";
 			}
@@ -147,17 +154,17 @@ public class ChatClientHandler extends Thread{
 				for (ChatClientHandler chatClient : onlineList) {
 					onlineClients += chatClient.getClientName() + "\n";
 				}
-				loginSuccessMessage = "Online: \n" + onlineClients;
+				loginSuccessMessage += "\nOnline: \n" + onlineClients;
 			}
 			outputStream.write(("<start>\n" + loginSuccessMessage + "\n<end>\n").getBytes());
 			System.out.println(name + " login successfully at " + new Date() + "\n");
+			this.onlineNotify(this.clientName + " is online.\n");
+			this.chatServer.addClient(this);
+			this.loginStatus = true;
 			this.outputStream.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		this.onlineNotify(this.clientName + " is online.\n");
-		this.chatServer.addClient(this);
-		this.loginStatus = true;
 	}
 	
 	public void handleLogOut() {
@@ -178,17 +185,16 @@ public class ChatClientHandler extends Thread{
 	}
 	
 	public void onlineNotify(String loginMsg) {
-		try {
-			if (this.chatServer.getClientList().size() == 0) {
-				return;
-			} else {
-				for (ChatClientHandler client : this.chatServer.getClientList()) {
-					client.outputStream.write(loginMsg.getBytes());
-				}
-			} 
-			outputStream.flush();
-		} catch (IOException e) {
-			e.printStackTrace();
+		if (this.chatServer.getClientList().size() == 0) {
+			return;
+		} else {
+			for (ChatClientHandler client : this.chatServer.getClientList()) {
+				client.chatQueue.add( new Message (
+						"RECV MSG\n" +
+						"server " + client.getClientName() + "\n\n" +
+						this.clientName +  " is online.")
+				);
+			}
 		}
 	}
 	

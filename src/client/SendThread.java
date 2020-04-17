@@ -23,7 +23,6 @@ public class SendThread implements Runnable {
 //			System.out.println("Loading...");
 		}
 		System.out.println("You can chat");
-		receiver = getReceiverName();
 		sendRequest();
 	}
 	
@@ -35,6 +34,7 @@ public class SendThread implements Runnable {
 	public void sendRequest() {
 		while (!client.getSocket().isClosed() && client.isLogin()) {
 			msg = "";
+			receiver = getReceiverName();
 			if (scn.hasNext()) {
 				System.out.println("[" + this.client.getName() + "]: " + (msg = scn.nextLine()));
 				if ((msg = msg.trim()).length() > 0) {
@@ -50,7 +50,6 @@ public class SendThread implements Runnable {
 	}
 	
 	public String getReceiverName () {
-		System.out.print("Who you want chat with: ");
 		return scn.nextLine();
 	}
 	
