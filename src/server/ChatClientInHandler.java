@@ -23,7 +23,6 @@ public class ChatClientInHandler implements Runnable {
 	public void run() {
 		while (chatClientHandler.isConnected()) {
 			if (chatClientHandler.hasException()){
-				client.handleLogOut();
 				break;
 			}
 			Message newMsg = getMessage();
@@ -53,6 +52,7 @@ public class ChatClientInHandler implements Runnable {
 			if (message.good()) {
 				return message;
 			} else {
+				this.chatClientHandler.readException();
 				return null;
 			}
 		} catch (IOException e) {

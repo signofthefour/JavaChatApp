@@ -103,7 +103,7 @@ public class ChatClientHandler extends Thread{
 		chatClientOutHandler.start();
 		
 		// TODO: synchronize the chat queue
-		while (true) {
+		while (true && chatClientInHandler.isAlive() && chatClientOutHandler.isAlive()) {
 			if (this.chatQueue.hasNext()) {
 				handleMessage(this.chatQueue.next());
 			}

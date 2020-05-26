@@ -30,16 +30,41 @@ public class ReceiveThread implements Runnable {
 						msg += line + "\n";
 					}
 					message = new Message(msg);
-//					System.out.println(message.getMethod());
 					if (message.getCommand().equals("200")) {
 						this.client.loginSuccess();
+						System.out.println("[" + message.getSender() + "]: " + message.getBody());
+						break;
 					}
-					System.out.println("[" + message.getSender() + "]: " + message.getBody());
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
+		while (client.isLogin()) {
+			if (client.hasDisconnected()) break;
+			msg = "";
+			try {
+				while ((line = bf.readLine()) == null) ;
+				if(line.equals("<start>")) {
+					try {
+						while (!((line = bf.readLine()).equals("<end>"))) {
+							msg += line + "\n";
+						}
+					}
+					catch (IOException e) {
+						client.disconnect();
+						return;
+					}
+					message = new Message(msg);
+					System.out.println("[" + message.getSender() + "]: " + message.getBody());
+				}
+			} catch (IOException e) {
+				client.disconnect();
+				return;
+			}
+
+		}
+
 	}
 	
 	public String getMsg() {

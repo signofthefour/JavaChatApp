@@ -21,14 +21,14 @@ public class ChatClientOutHandler implements Runnable {
 	public void run() {
 		// TODO Auto-generated method stub
 		while (true) {
+			if (client.hasException()) break;
 			if (client.chatOut.getOutMessage().good()) {
 				try {
 					outputStream.write(client.chatOut.getOutMessage().toText().getBytes());
-					client.chatOut.clear();
+					this.client.chatOut.clear();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
-					System.out.println("Disconnected");
-					client.readException()
+					client.readException();
 					break;
 				}
 			} else {
