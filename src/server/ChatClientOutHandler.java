@@ -27,7 +27,9 @@ public class ChatClientOutHandler implements Runnable {
 					client.chatOut.clear();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					System.out.println("Disconnected");
+					client.readException()
+					break;
 				}
 			} else {
 				continue;

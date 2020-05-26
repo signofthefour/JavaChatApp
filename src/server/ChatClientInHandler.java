@@ -22,6 +22,10 @@ public class ChatClientInHandler implements Runnable {
 	@Override
 	public void run() {
 		while (chatClientHandler.isConnected()) {
+			if (chatClientHandler.hasException()){
+				client.handleLogOut();
+				break;
+			}
 			Message newMsg = getMessage();
 			if (newMsg != null) {
 				this.chatClientHandler.chatQueue.add(newMsg);
@@ -53,7 +57,7 @@ public class ChatClientInHandler implements Runnable {
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.chatClientHandler.readException();
 		}
 		return null;
 	}
