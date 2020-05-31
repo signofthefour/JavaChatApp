@@ -14,6 +14,7 @@ public class ChatClient implements Runnable {
 	class Control {
 		private volatile boolean loginStatus = false;
 		private boolean disconnect = false;
+		private boolean reLogin = false;
 	}
 	
 	final Control control = new Control();
@@ -31,12 +32,16 @@ public class ChatClient implements Runnable {
 	public OutputStream getOutputStream() { return out; }
 	public boolean isLogin() { return control.loginStatus; }
 	public void loginSuccess() {control.loginStatus = true; }
+	public boolean reLogin() {return control.reLogin; }
+	public void reLoginRequest() {control.reLogin = true; }
+	public void reLoginDone() {control.reLogin = false; }
+	private boolean disconnect = false;
+	public void setName(String _name) {name = _name;}
 	public void disconnect() {
 		control.loginStatus = false;
 		control.disconnect = true;
 		try{
 			socket.close();
-			System.out.println("Disconnected");
 		} catch (IOException e) {
 			System.out.println("Not Disconnected");
 		}

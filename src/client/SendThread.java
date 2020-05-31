@@ -20,6 +20,10 @@ public class SendThread implements Runnable {
 	public void run() {
 		loginRequest();
 		while (!client.isLogin()){
+			if (client.reLogin()) {
+				loginRequest();
+				client.reLoginDone();
+			}
 //			System.out.println("Loading...");
 		}
 		System.out.println("You can chat");
@@ -60,10 +64,18 @@ public class SendThread implements Runnable {
 	}
 	
 	public void loginRequest() {
+		Scanner scn = new Scanner(System.in);
+		System.out.println("===============LOGIN================");
+		System.out.print("Email: ");
+		String gmail = scn.nextLine();
+		System.out.print("Password: ");
+		String password =  scn.nextLine();
+		System.out.println("====================================");
 		msg = "REQUEST LOGIN\n";
 		msg += this.client.getName() + " server\n";
 		msg += "\n";
-		msg += this.client.getName() + "\n";
+		msg += gmail + "\n";
+		msg += password + "\n";
 		try {
 			send(msg);
 			msg = "";

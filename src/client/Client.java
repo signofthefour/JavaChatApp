@@ -20,15 +20,10 @@ public class Client {
 		
 		try {
 			Socket socket = new Socket(hostname, port);
-			System.out.println("Hey...");
 			OutputStream outputStream = socket.getOutputStream();
 			InputStream inputStream = socket.getInputStream();
-			Scanner scn = new Scanner(System.in);
 			
-			System.out.print("Enter you name: ");
-			String name = scn.nextLine();
-			
-			Thread chatClient = new Thread(new ChatClient(name, inputStream, outputStream, socket));
+			Thread chatClient = new Thread(new ChatClient("", inputStream, outputStream, socket));
 			chatClient.start();
 		} catch (UnknownHostException e) {
 			e.printStackTrace();

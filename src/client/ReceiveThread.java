@@ -30,11 +30,8 @@ public class ReceiveThread implements Runnable {
 						msg += line + "\n";
 					}
 					message = new Message(msg);
-					if (message.getCommand().equals("200")) {
-						this.client.loginSuccess();
-						System.out.println("[" + message.getSender() + "]: " + message.getBody());
-						break;
-					}
+					handleMsg(message);
+					if (client.isLogin()) break;
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -56,7 +53,7 @@ public class ReceiveThread implements Runnable {
 						return;
 					}
 					message = new Message(msg);
-					System.out.println("[" + message.getSender() + "]: " + message.getBody());
+					handleMsg(message);
 				}
 			} catch (IOException e) {
 				client.disconnect();
@@ -69,5 +66,24 @@ public class ReceiveThread implements Runnable {
 	
 	public String getMsg() {
 		return msg;
+	}
+
+	public void handleMsg(Message msg) {
+		if (msg.getMethod().equals("NOTI")){
+			if (message.getMethod().equals("NOTI")) {
+				if (message.getCommand().equals("200")) {
+					this.client.loginSuccess();
+					this.client.setName(message.getReceiver());
+					System.out.println("Name: "+ this.client.getName());
+					System.out.println("New notification:\n" + message.getBody() + "\nFrom msg.getSender()\n");
+				} else {
+					client.reLoginRequest();
+					System.out.println(message.getBody() + "\n");
+				}
+			}
+		}
+		else if (msg.getMethod().equals("RECV")) {
+			System.out.println("[" + message.getSender() + "]: " + message.getBody());
+		}
 	}
 }
