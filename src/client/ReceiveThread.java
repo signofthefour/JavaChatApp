@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import protocol.Message;
+import java.io.ByteArrayInputStream;
+import java.io.FileOutputStream;
 
 public class ReceiveThread implements Runnable {
 	private InputStream inputStream;
@@ -83,7 +85,30 @@ public class ReceiveThread implements Runnable {
 			}
 		}
 		else if (msg.getMethod().equals("RECV")) {
-			System.out.println("[" + message.getSender() + "]: " + message.getBody());
+			if (msg.getCommand().equals("MSG")){
+				System.out.println("[" + message.getSender() + "]: " + message.getBody());
+				return;
+			}
+			if (msg.getCommand().equals("FILE")){
+				InputStream inputStream =  new ByteArrayInputStream(msg.getBody().getBytes());
+				BufferedReader bf = new BufferedReader(new InputStreamReader(inputStream));
+				try {
+					int fileLength = Integer.parseInt(bf.readLine());	
+					String fileName = bf.readLine();
+					byte[] fileContent = new byte[fileLength];
+					inputStream.read(fileContent);
+					try (FileOutputStream fos = new FileOutputStream("/home/nguyendat/Documents/projects/ChatApp/src/client/hello.txt")) {
+   						fos.write(msg.getBody().getBytes());
+   						fos.close(); 
+						// There is no more need for this line since you had created the instance of "fos" inside the try. And this will automatically close the OutputStream
+					}
+					bf.close();
+					inputStream.close();
+				} catch (IOException e) {
+					System.out.println("Not good");
+				}
+				return;
+			}
 		}
 	}
 }
