@@ -58,7 +58,7 @@ public class SendThread implements Runnable {
 						logoutRequest();
 					} else if (msg.equals("file")) {
 						try {
-							loadFile("/home/nguyendat/Documents/projects/ChatApp/src/client/SendThread.java", "SendThread.java",receiver);
+							loadFile("/home/nguyendat/Documents/projects/ChatApp/src/client/a.png", "SendThread.java",receiver);
 							System.out.println("File sent");
 							continue;
 						} catch (IOException e) {
