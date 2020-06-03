@@ -1,11 +1,7 @@
 package client;
 
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.Scanner;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 
 
 public class SendThread implements Runnable {
@@ -59,11 +55,17 @@ public class SendThread implements Runnable {
 					} else if (msg.equals("file")) {
 						try {
 							loadFile("/home/nguyendat/Documents/projects/ChatApp/src/client/a.png", "SendThread.java",receiver);
-							System.out.println("File sent");
 							continue;
 						} catch (IOException e) {
 							System.out.println("Load file failure.");
 						}	
+					} else if (msg.equals("gr")) {
+						try {
+							// TODO: test create new group from server
+							continue;
+						} catch (IOException e) {
+							System.out.println("Load file failure.");
+						}
 					}
 					else {
 						msg = "SEND MSG\n" + this.client.getName() + " " + receiver + "\n" + "\n" + msg + "\n";
@@ -89,11 +91,10 @@ public class SendThread implements Runnable {
         	try {
         	    	// create FileInputStream object
         	 	fin = new FileInputStream(file);
- 
 	         	fileContent = new byte[(int)file.length()];
-             
         	 	   // Reads up to certain bytes of data from this input stream into an array of bytes.
            	 	fin.read(fileContent);
+				System.out.println(fileContent);
            	 	//create string from byte array
         	}
         	catch (FileNotFoundException e) {

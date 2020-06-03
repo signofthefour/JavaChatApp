@@ -46,16 +46,35 @@ public class ReceiveThread implements Runnable {
 			try {
 				while ((line = bf.readLine()) == null) ;
 				if(line.equals("<start>")) {
+					boolean isHeaderEnd = false;
+					boolean hasFile = false;
+					char[] fileContentChar = null;
+					byte[] fileContent = null;
 					try {
 						while (!((line = bf.readLine()).equals("<end>"))) {
-							msg += line + "\n";
+							if (!isHeaderEnd && line.contains("FILE")) {
+								hasFile = true;
+							}
+							int length;
+							if (isHeaderEnd && hasFile) {
+								length = Integer.parseInt(line);
+								msg += line + "\n"; // length of file
+								line = bf.readLine();
+								msg += line + "\n"; // Name of file+
+								fileContentChar =  new char[length];
+								bf.read(fileContentChar);
+								fileContent = new String(fileContentChar).getBytes();
+							}
+							if (line == "\n") isHeaderEnd = true;
+							if (fileContent == null) msg += line + "\n";
 						}
 					}
 					catch (IOException e) {
 						client.disconnect();
 						return;
 					}
-					message = new Message(msg);
+					if (fileContent != null) message.createNew(msg, fileContent);
+					else message.createNew(msg);
 					handleMsg(message);
 				}
 			} catch (IOException e) {
@@ -78,7 +97,7 @@ public class ReceiveThread implements Runnable {
 					this.client.loginSuccess();
 					this.client.setName(message.getReceiver());
 					System.out.println("Name: "+ this.client.getName());
-					System.out.println("New notification:\n" + message.getBody() + "\nFrom msg.getSender()\n");
+					System.out.println("New notification:\n" + message.getBody() + "From: " + msg.getSender()+ "\n");
 				} else {
 					client.reLoginRequest();
 					System.out.println(message.getBody() + "\n");
@@ -91,20 +110,11 @@ public class ReceiveThread implements Runnable {
 				return;
 			}
 			if (msg.getCommand().equals("FILE")){
-				InputStream inputStream =  new ByteArrayInputStream(msg.getBody().getBytes());
-				BufferedReader bf = new BufferedReader(new InputStreamReader(inputStream));
 				try {
-					int fileLength = Integer.parseInt(bf.readLine());
-					System.out.println(fileLength);
-					String fileName = bf.readLine();
-					System.out.println(fileName);
-					byte[] fileContent = new byte[(int)fileLength];
-					InputStream forFile = new ByteArrayInputStream(msg.getBody().getBytes());
-					System.out.println(forFile.available());
-					forFile.read(fileContent, 0, forFile.available() - fileLength);
-					forFile.read(fileContent, 0, fileLength);	
+					byte[] fileContent = msg.getFileContent();
 					try (FileOutputStream fos = new FileOutputStream("/home/nguyendat/Documents/projects/ChatApp/src/client/hello.png")) {
    						fos.write(fileContent);
+						System.out.println("[" + message.getSender() + "]: " + message.getBody());
    						fos.close(); 
 						// There is no more need for this line since you had created the instance of "fos" inside the try. And this will automatically close the OutputStream
 					}
