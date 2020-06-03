@@ -60,12 +60,11 @@ public class SendThread implements Runnable {
 							System.out.println("Load file failure.");
 						}	
 					} else if (msg.equals("gr")) {
-						try {
-							// TODO: test create new group from server
-							continue;
-						} catch (IOException e) {
-							System.out.println("Load file failure.");
-						}
+						requestNewGroup("", "");
+						continue;
+					} else if (msg.equals("gr1")) {
+						sendToGroup("", "");
+						continue;
 					}
 					else {
 						msg = "SEND MSG\n" + this.client.getName() + " " + receiver + "\n" + "\n" + msg + "\n";
@@ -79,7 +78,31 @@ public class SendThread implements Runnable {
 			}
 		}
 	}
-	
+
+	private void sendToGroup(String grName, String message) {
+		grName = "group1";
+		message = "WOWOWOWOWOWOWOOWWWOOWWOWOWOW";
+		String grMsg = "SEND GROUP\n" + this.client.getName() + " " + grName + "\n\n"+ message + "\n";
+		try {
+			send(grMsg);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return;
+	}
+
+	private void requestNewGroup(String name, String member) {
+		name = "group1";
+		member = "tandat\ndat";
+		String msg = "REQUEST CREATE_GR\n" + this.client.getName() + " server\n\n"+ name + "\n" + member + "\n";
+		try {
+			send(msg);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return;
+	}
+
 	public String getReceiverName () {
 		return scn.nextLine();
 	}

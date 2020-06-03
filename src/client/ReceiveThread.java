@@ -109,6 +109,10 @@ public class ReceiveThread implements Runnable {
 				System.out.println("[" + message.getSender() + "]: " + message.getBody());
 				return;
 			}
+			if (msg.getCommand().equals("GROUP")) {
+				System.out.println("[" + message.getSender() + " to " + message.getReceiver() + "]: " + message.getBody());
+				return;
+			}
 			if (msg.getCommand().equals("FILE")){
 				try {
 					byte[] fileContent = msg.getFileContent();
