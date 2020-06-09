@@ -1,9 +1,6 @@
 package server;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 
 import protocol.Message;
 
@@ -33,20 +30,51 @@ public class ChatClientInHandler implements Runnable {
 			}
 		}
 	}
-	
+
 	public Message getMessage() {
 		String line;
 		String msg = "";
 		Message message = new Message();
+		boolean isHeaderEnd = false;
+		boolean hasFile = false;
 		try {
 			if ((line = reader.readLine()) != null) {
 				msg = "";
+				char[] fileContentChar = null;
+				byte[] fileContent = null;
 				if (line.equals("<start>")) {
 					line = "";
 					while (!(line = reader.readLine()).equals("<end>")) {
-						msg += line + "\n";
+						if (!isHeaderEnd && line.contains("FILE")) {
+							hasFile = true;
+						}
+						int length;
+						if (isHeaderEnd && hasFile) {
+							length = Integer.parseInt(line);
+							msg += line + "\n"; // length of file
+							line = reader.readLine();
+							msg += line + "\n"; // Name of file+
+							fileContentChar = new char[(int) length];
+							System.out.println(line);
+							reader.read(fileContentChar, 0, length);
+							fileContent =  (new String(fileContentChar)).getBytes();
+
+//							System.out.println(fileContentChar);
+							int count = 0;
+							try (FileOutputStream fout = new FileOutputStream("/home/nguyendat/Desktop/hello.png")) {
+								fout.write(fileContent, 0, fileContent.length);
+							}
+						}
+						if (line.equals("")) {
+							isHeaderEnd = true;
+						}
+						if (fileContent == null) msg += line + "\n";
 					}
-					message.createNew(msg);
+					if (fileContent != null) message.createNew(msg, fileContent);
+					else {
+						message.createNew(msg);
+						System.out.println(msg);
+					}
 				}
 			}
 			if (message.good()) {
